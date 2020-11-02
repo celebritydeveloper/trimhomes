@@ -9,6 +9,9 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="confirm">
     <div class="block block-strong">
+      <p class="text-center">
+        <f7-icon class="text-center register-icon" ios="f7:envelope_badge" aurora="f7:envelope_badge" md="material:mail_outline"></f7-icon>
+      </p>
       <f7-block-title class="confirm--title">You’ve got mail....</f7-block-title>
       <p class="text">Please check your mailbox for an email from Trim Homes UK and enter the confirmation  code you received below:</p>
     </div>
@@ -64,10 +67,6 @@ export default {
     console.log(userInfo);
   },
   watch: {
-    // email(value){
-    //   // binding this to the data value in the email input
-    //   this.email = value;
-   // },
    token(value){
       this.token = value;
       this.validateToken(value);
@@ -105,50 +104,33 @@ export default {
     async resendToken() {
         this.$f7.preloader.show();
         try {
-          firebase.firestore().collection("users").where("phone", "==", userInfo.phone).get().then((snapshot) => {
-            let results = snapshot.docs.map(doc => {
-              userId = doc.id;
-              console.log(doc.id);
-            });
-            firebase.firestore().collection("users").doc(userId).update({
-              token: otpCode,
-          }).then(() => {
-            
-            console.log("Updated");
-            Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-              Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : userInfo.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "TrimHomes - Verify Your Email",
-              Body : `
-              <p>Thank you for registering with TrimHomes</p>
-              <p>Here is your newly generate token <strong>${otpCode}</strong> to verify your email. </p>
-              `
-          }).then(
-            message => console.log(message)
-          );
-          this.$f7.dialog.alert(`A new generated token has been sent to ${userInfo.email}`, "Success");
-          }).then(() => {
             if(JSON.parse(localStorage.getItem("trimhomesUser"))) {
                 let userToken = JSON.parse(localStorage.getItem('trimhomesUser'));
                 userToken.token = otpCode;
                 localStorage.setItem("trimhomesUser", JSON.stringify(userToken));
               }
-          this.$f7.preloader.hide();
-        }).then(() => {
-            this.$f7router.navigate('/verify-token/', {
-            ignoreCache:true,
-            reloadCurrent:true,
-            });
-            this.$f7router.refreshPage({
-            path: '/verify-token/'
-            });
-        })
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "mail@trimhomes.co.uk",
+              Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
+              To : userInfo.email,
+              From : "mail@trimhomes.co.uk",
+              Subject : "Trim Homes - Verify Your Email",
+              Body : `
+              <p>Thank you for registering with Trim Homes</p>
+              <p>Here is your newly generate token <strong>${otpCode}</strong> to verify your email. </p>
+              `
+          }).then(
+            this.$f7.preloader.hide(),
+            this.$f7.dialog.alert(`A new generated token has been sent to ${userInfo.email}`, "Success"),
+            message => console.log(message),
+          );
+          
             
-          })
+          
+            
+    
           
       } catch (err) {
         console.log(err);
@@ -205,6 +187,14 @@ export default {
     font-weight: 350;
     margin-bottom: 1.5rem !important;
     padding-right: 35px;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .register-icon {
+    font-size: 2.5rem;
   }
 
   .valid {

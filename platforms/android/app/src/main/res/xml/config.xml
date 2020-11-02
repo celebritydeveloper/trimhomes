@@ -9,12 +9,12 @@
     </widget>
     <hook src="hooks/hookers.js" type="before_prepare" />
     <hook src="hooks/beforedep.js" type="before_deploy" />
-    <name>Trim Homes</name>
+    <name short="TrimHomes">Trim Homes</name>
     <description>
-        Trim Homes real estate app
+        TrimHomes real estate investment app
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="essiensaviour.a@gmail.com" href="http://theboringcreatives.com">
+        Saviour Essien
     </author>
     <content src="index.html" />
     <access origin="*" />

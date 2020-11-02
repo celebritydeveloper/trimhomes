@@ -8,38 +8,35 @@
     </f7-navbar>
     
     <f7-page-content class="register">
-    <div class="block block-strong">
+    <div class="block">
       <!--<div   class="dp">
         <img :src="user" class="user">
         <p>{{uploadValue.toFixed() + "%"}}
-      <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
+        <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
       </div>-->
+   
+       <img :src="user" class="user">
       
-
-
-      <div>
-      
-    </div>
       
     </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
+    <form @submit.prevent="registerUser" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
-      <li class="item-content item-input image">
+      <!--<li class="item-content item-input image">
           <div class="item-inner">
             <div class="item-input-wrap">
             
-              <label for="image">
-                <img :src="user" class="user">
-              </label>
+              <div class="preview">
+                <img v-if="url" :src="url" class="user">
+              </div>
               
               <div class="dp">
-                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage" required validate data-error-message="Please upload your image!">
+                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="onFileChange" required validate data-error-message="Please upload your image!">
                 <p>{{uploadValue.toFixed() + "%"}}
                 <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
               </div>
             </div>
           </div>
-      </li>
+      </li>-->
       <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-title item-label">First Name</div>
@@ -71,8 +68,8 @@
           <div class="item-inner">
             <div class="item-title item-label">Phone Number</div>
             <div class="item-input-wrap">
-              <input name="phone" type="tel" v-model="phone" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
+              <vue-tel-input v-model="phone" enabledCountryCode showDialCode="true" tabindex="0" defaultCountry required></vue-tel-input>
+              <small>{{phone}}</small>
             </div>
           </div>
         </li>
@@ -87,26 +84,22 @@
         </li>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">Address:</div>
-            <div class="item-input-wrap">
-              <input name="address" type="text" v-model="address" required validate>
-              <span class="input-clear-button"></span>
+            <div class="item-title item-label">How Did You Hear About Us?:</div>
+            <div class="item-input-wrap input-dropdown-wrap">
+              <select v-model="selected">
+                <option :value="medium.value" v-for="(medium, index) in referrer" :key="index">
+                    {{medium.text}}
+                </option>
+              </select>
             </div>
           </div>
         </li>
-        <li class="item-content item-input">
+        <li class="item-content item-input" v-if="showStaff">
           <div class="item-inner">
-            <div class="item-title item-label">How Did You Hear About Us?:</div>
-            <div class="item-input-wrap input-dropdown-wrap">
-              <select v-model="referrer">
-                <option disabled selected>Please Select an Option</option>
-                <option value="Male">Family</option>
-                <option value="Female">Friend</option>
-                <option value="Private Institution">Private Institution</option>
-                <option value="Advert">Advert</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Member of Staff">Member of Staff</option>
-              </select>
+            <div class="item-title item-label">Staff Name or Number</div>
+            <div class="item-input-wrap">
+              <input name="password" type="text" v-model="staff"  required validate data-error-message="Cannot be empty">
+              <span class="input-clear-button"></span>
             </div>
           </div>
         </li>
@@ -115,7 +108,7 @@
           <f7-link class="forgot-btn" href="https://trimhomes.co.uk/privacy-policy" external target="_blank">Terms &amp; Conditions</f7-link> 
           and our  
           <f7-link class="forgot-btn" href="https://trimhomes.co.uk/privacy-policy" external target="_blank" > Privacy Policy.</f7-link></p>
-          <f7-button class="register--btn" type="submit">Create Account</f7-button>
+          <f7-button fill raised large class="register--btn" type="submit">Create Account</f7-button>
         </li>
         
       </ul>
@@ -126,6 +119,7 @@
 <script>
 import logo from '../../images/logo-nav.png';
 import user from '../../images/user.png';
+
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage'
@@ -146,47 +140,62 @@ export default {
       errors: [],
       logo,
       user,
+      selected: null,
+      img: null,
       imageData: null,
       picture: null,
+      url: null,
       uploadValue: 0,
       firstName: '',
       lastName: '',
       email: "",
+      region: "",
       phone: "",
       memorableNumber: "",
-      address: "",
-      referrer: '',
+      staff: "",
+      referrer: [
+          { value: null, text: 'How did you hear about us?' },
+          { value: 'Family', text: 'Family' },
+          { value: 'Friend', text: 'Friend' },
+          { value: 'Private Institution', text: 'Private Institution' },
+          { value: 'Advert', text: 'Advert' },
+          { value: 'Social Media', text: 'Social Media'},
+          { value: 'Member of Staff', text: 'Member of Staff'}
+      ],
     }
+  },
+  computed: {
+    showStaff: function(){
+          if(this.selected === 'Member of Staff') {
+            return true;
+          }
+      }
   },
   methods: {
 
-    previewImage(event) {
-      this.uploadValue = 0;
-      this.picture = null;
-      this.imageData = event.target.files[0];
-    },
+    // previewImage(event) {
+    //   this.uploadValue = 0;
+    //   this.picture = null;
+    //   this.imageData = event.target.files[0];
+    // },
 
-    async submitted() {
+    // onFileChange(e) {
+    //   this.imageData = event.target.files[0];
+    //   const file = e.target.files[0];
+    //   this.url = URL.createObjectURL(file);
+    // },
+
+    async registerUser() {
       this.$f7.preloader.show();
       try {
-
-            const storageRef = firebase.storage().ref().child('/users').child(`${this.imageData.name}`).put(this.imageData);
-            storageRef.on(`state_changed`,snapshot => {
-            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
-          }, error => {console.log(error.message)},
-          () => {this.uploadValue = 100;
-            storageRef.snapshot.ref.getDownloadURL().then((url) => {
-              this.picture = url;
-              pics = url;
-            }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
               Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              Username : "mail@trimhomes.co.uk",
+              Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
               To : this.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes UK",
+              From : "mail@trimhomes.co.uk",
+              Subject : "Verify Your Email - Trim Homes",
               Body : `
               <!doctype html>
                 <html>
@@ -300,9 +309,9 @@ export default {
                                   <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                                     <tr>
                                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                      <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
+                                      <p style="background: #2B3D4C; padding: 0 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello <strong>${this.firstName}</strong>,</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you for registering with TrimHome UK</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you for registering with Trim Homes</p>
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Use the following code to verify your email address</p>
                                         <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
                                           <tbody>
@@ -351,20 +360,21 @@ export default {
               `
           }).then(
             message => console.log(message + "Sent")
-          );
-          }).then(() => {
+          ).then(() => {
             const userInfo = {
               firstName: this.firstName,
               lastName: this.lastName,
               email: this.email,
-              image: pics,
+              image: '',
               memorableNumber: this.memorableNumber,
               phone: this.phone,
-              address: this.address,
+              country: '',
               bankName: '',
               bankNumber: '',
               bankAccountName: '',
               bankSortCode: '',
+              referrer: this.selected,
+              staff: this.staff,
               verified: false,
               created: new Date(),
               token
@@ -373,11 +383,10 @@ export default {
           }).then(() => {
           this.$f7.preloader.hide();
           this.$f7router.navigate('/verify-token/');
-        });
-        });
-            
+        }); 
           
       } catch (err) {
+        this.$f7.dialog.alert(err, "Error");
         console.log(err);
       }
 
@@ -409,6 +418,7 @@ export default {
         height: 0px;
     }
 
+
     .text-black {
         color: #000;
     }
@@ -417,21 +427,21 @@ export default {
     background: #fff;
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px;
-    padding-top: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    padding-left: 0.8rem;
+    padding-right: 0.5rem;
 
   }
 
-  .block-strong {
+  .block {
     align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     margin-bottom: 5px;
-    margin-top: 15px;
-    padding-top: 10px;
+    margin-top: 0.5rem;
     padding-bottom: 5px;
   }
 
@@ -462,7 +472,19 @@ export default {
   .upload::-webkit-file-upload-button {
     color: transparent;
     display: none;
+    text-align: center;
   }
+
+  .preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 500px;
+}
 
   /* The overlay effect (full height and width) - lays on top of the container and over the image */
 .overlay {
@@ -491,10 +513,13 @@ export default {
 }
   
 
-  /* .upload::before {
-    content: 'Upload a profile picture';
-    display: inline-block;
+  .upload::before {
+    align-items: center;
+    border: 1px solid #2B3D4C;;
+    content: 'Upload a Profile Picture';
+    display: flex;
     border-radius: 3px;
+    justify-content: center;
     padding: 5px 8px;
     outline: none;
     white-space: nowrap;
@@ -503,7 +528,10 @@ export default {
     text-shadow: 1px 1px #fff;
     font-weight: 700;
     font-size: 10pt;
-  } */
+    margin-top: 1rem;
+    padding: 0.5rem;
+    text-align: center;
+  }
 
   .register--title {
     color: #2B3D4C;
@@ -560,7 +588,6 @@ export default {
 
   .register--btn {
     background: #2B3D4C;
-    border-radius: 0px;
     color: #fff;
     margin: 0 auto;
     width: 90%;

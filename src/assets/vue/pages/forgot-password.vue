@@ -9,7 +9,7 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="forgot">
     <div class="block block-strong">
-        <img :src="user" class="user">
+        <img :src="avatar" class="user">
       <p class="text">Enter the email address associated with your account</p>
       <p class="text-small">We will send you a verification  code to reset your password</p>
     </div>
@@ -34,7 +34,7 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
-import user from '../../images/user.png';
+import avatar from '../../images/user.png';
 import OTP from 'otp-client';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       logo,
-      user,
+      avatar,
       email: "",
     }
   },

@@ -6,25 +6,6 @@
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
-    <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
-      <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
-      <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
-      <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
-      <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
-    </f7-toolbar>
-
-    <f7-panel class="panel" right resizable theme-dark>
-    <f7-view>
-      <f7-page>
-        <f7-link class="panel-close" panel-close><f7-icon ios="f7:close" aurora="f7:close" md="material:close" panel-close></f7-icon></f7-link>
-        
-        <f7-link class="panel-link" href="/">My Profile</f7-link>
-        <f7-link class="panel-link" href="/">My Earnings</f7-link>
-        <f7-link class="panel-link" href="/">Settings</f7-link>
-      </f7-page>
-    </f7-view>
-  </f7-panel>
 
     <f7-page-content class="confirm">
 
@@ -39,7 +20,7 @@
                   {{currentProperty.Location}},
                   </span>-->
                   <span class="project-location">
-                  {{currentProperty.Location}},
+                  {{currentProperty.Location}}
                   </span>
             </p>
         </div>
@@ -57,20 +38,24 @@
 
          <f7-block class="project-info-block">
              <div class="project-info">
-                <p class="project-info-title">Outright Purchase</p>
-                <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <f7-link @click="makeOutright" class="register--btn">Buy Outright</f7-link>
-                </div>
+               <div class="price">
+                 <p class="project-info-title">Buy Outright</p>
+                 <p class="project-price">{{convertCurrency(currentProperty.Outright)}}</p>
+               </div>
+                <p class="project-info-text">Acquire full ownership of this property and increase your net worth, asset base and income streams permanently.</p>
+                  <f7-button @click="makeOutright" class="outright--btn">Buy Outright</f7-button>
             </div>
             <div class="project-info">
-                <p class="project-info-title">Part-Purchase</p>
-                <p class="project-info-text">Buy a part of this property to own a share of it and earn rental income monthly.</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.PartPrice)}}</span>
-                  <span class="register--btn" @click="$refs.actionsOneGroup.open()">Buy a Share</span>
-                </div>
+              <div class="price">
+                <p class="project-info-title">Earn Rental Income</p>
+                <p class="project-price" v-if="currentProperty.PartPrice == 'Sold Out'">Sold Out </p>
+                <p class="project-price" v-else>{{convertCurrency(currentProperty.PartPrice)}}</p>
+              </div>
+                
+                <p class="project-info-text">Pay any amount from £500.00 towards the rental income scheme on this property and earn 1% of your payment each month in rent.</p>
+
+                  <f7-button class="part--btn" :disabled="currentProperty.PartPrice == 'Sold Out'" @click="$refs.actionsOneGroup.open()">Earn Rental Income</f7-button>
+                
             </div>
         </f7-block>
 
@@ -83,7 +68,7 @@
             >
             <f7-page-content>
                 <f7-block>
-                  <p class="request-title">How much do you want to buy?</p>
+                  <p class="request-title">How much do you want to pay?</p>
                 <form @submit.prevent="makeRequest" no-store-data="true" class="list form-store-data" id="demo-form">
                   <ul>
                     <li class="item-content item-input">
@@ -94,14 +79,14 @@
                         </div>
                       </div>
                     </li>
-                    
                   </ul>
+                  <p class="text-center valid" v-if="msg.amount" :class="valid">{{msg.amount}}</p>
                   <p class="request-income">Your Monthly Rental Income:
                     <span>£{{ getPercent()  + '%'}}</span>
                   </p>
                   <p class="request-info">Based on your purchase amount entered above, your monthly rental income of <strong>£{{ getPercent()  + '%'}}</strong> will be paid on the last day of next month.</p>
 
-                  <f7-button class="verify--btn" type="submit">Proceed to Payment</f7-button>
+                  <f7-button class="verify--btn" type="submit" :disabled="amount < 500">Proceed to Payment</f7-button>
                 </form>
                 </f7-block>
             </f7-page-content>
@@ -146,6 +131,8 @@ export default {
         name: null,
         email: null,
         phone: null,
+        valid: null,
+        msg: []
 
       }
   },
@@ -182,7 +169,26 @@ export default {
   components: {
       f7Sheet,
   },
+  watch: {
+    amount(value){
+      // binding this to the data value in the email input
+      this.amount = value;
+      this.validateAmount(value);
+    }
+  },
   methods: {
+    validateAmount(value){
+      if (value < 500) {
+        this.msg['amount'] = 'Payment amount cannot be less than £500';
+        this.valid = "amount-error";
+      } else if (!/^[0-9]*$/.test(value)) {
+        this.msg['amount'] = 'Must contain only number';
+        this.valid = "amount-error";
+      } else {
+        this.msg['amount'] = 'Great! This looks good.';
+        this.valid = "amount-success";
+      }
+   },
     async getAccount() {
         try {
           firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.uid).get().then((snapshot) => {
@@ -289,10 +295,10 @@ export default {
               Email.send({
                 secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
                 Host : "smtp.elasticemail.com",
-                Username : "essiensaviour.a@gmail.com",
-                Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+                Username : "mail@trimhomes.co.uk",
+                Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
                 To : this.emailAddress,
-                From : "essiensaviour.a@gmail.com",
+                From : "mail@trimhomes.co.uk",
                 Subject : "TrimHomes - Investment Request",
                 Body : `
                 <!doctype html>
@@ -461,10 +467,10 @@ export default {
               Email.send({
                 secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
                 Host : "smtp.elasticemail.com",
-                Username : "essiensaviour.a@gmail.com",
-                Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-                To : "essiensaviour.a@gmail.com",
-                From : "essien@theboringcreatives.com",
+                Username : "mail@trimhomes.co.uk",
+                Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
+                To : "mail@trimhomes.co.uk",
+                From : "mail@trimhomes.co.uk",
                 Subject : "TrimHomes - Investment Request",
                 Body : `
                 <!doctype html>
@@ -651,6 +657,13 @@ export default {
       }
       return true;
       
+    },
+    buttonState() {
+      if(this.currentProperty.PartPrice === "Sold Out") {
+        return "inactive-register--btn";
+      }else {
+        return "register--btn";
+      }
     }
   },
   computed: {
@@ -677,6 +690,24 @@ export default {
 
     .home {
         background: #fff;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .amount-error {
+      color: red;
+      font-size: 0.7rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .amount-success {
+      color: green;
+      font-size: 0.7rem;
+      margin: 0;
+      padding: 0;
     }
 
     .confirm {
@@ -722,15 +753,11 @@ export default {
     }
 
     .project-price {
-        background: rgba(7, 153, 144, 0.4);
         color: rgb(43, 61, 76);
         border-radius: 0.3rem;
         font-size: 0.9rem !important;
         font-weight: bold !important;
-        margin-top: 0.3rem;
-        padding: 0.3rem 0rem;
         text-align: center;
-        width: 50%;
     }
 
     .project-icons {
@@ -765,6 +792,7 @@ export default {
       align-items: center;
       display: flex;
       justify-content: space-between;
+      margin-top: 1rem;
     }
 
     .request-title {
@@ -898,10 +926,25 @@ export default {
       padding: 0 0 0.5rem 0.5rem;
     }
 
-    .register--btn {
+    .outright--btn {
     background: #2B3D4C;
-    border-radius: 0px;
+    background: #0d919b;
     color: #fff;
+    margin-top: 0.7rem;
+    width: 50%;
+  }
+
+  .part--btn {
+    background: #2B3D4C;
+    color: #fff;
+    margin-top: 0.7rem;
+    width: 50%;
+  }
+
+  .inactive-register--btn {
+    background: #d6d6d6;
+    border-radius: 0px;
+    color: rgb(99, 99, 99);
     font-weight: 500;
     padding: 0.5rem 0.7rem;
   }
@@ -938,7 +981,7 @@ export default {
   }
 
   .list {
-    margin: 0px;
+    margin: 0;
   }
 
   .list .item-content .item-inner .item-title{

@@ -1,7 +1,9 @@
 <template>
-  <f7-page>
-  <f7-navbar class="home--nav">
-    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
+  <f7-page name="contact">
+  <f7-navbar class="home--nav" back-link>
+    <f7-nav-left>
+        <f7-nav-title>Contact</f7-nav-title>
+      </f7-nav-left>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -62,7 +64,7 @@
                 of property acquisition services. Please refer to our <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link> for more details of
                 how we use your contact information.  
           </p>
-          <f7-button class="register--btn" type="submit">Contact Us</f7-button>
+          <f7-button fill raised large class="custom--btn" type="submit">Contact Us</f7-button>
         </li>
         
       </ul>
@@ -73,15 +75,12 @@
 <script>
 import logo from '../../images/logo-nav.png';
 import user from '../../images/user.png';
+
+
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage'
-import OTP from 'otp-client';
 
-
-const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY'
-const otp = new OTP(secret);
-const token = otp.getToken();
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
@@ -110,21 +109,21 @@ export default {
     async submitContact() {
       this.$f7.preloader.show();
       try {
-            Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+        Email.send({
+              secureToken: "df141b53-cbb5-423c-92ac-ecc8b9a2b245",
               Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : 'essiensaviour.a@gmail.com',
-              From : 'essiensaviour.a@gmail.com',
-              Subject : "TrimHomes App Contact",
+              Username : "mail@trimhomes.co.uk",
+              Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
+              To : "mail@trimhomes.co.uk",
+              From : "mail@trimhomes.co.uk",
+              Subject : "Contact Request - Trim Homes",
               Body : `
               <!doctype html>
                 <html>
                   <head>
                     <meta name="viewport" content="width=device-width">
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                    <title>TrimHomes App Contact</title>
+                    <title>Trim Homes App Contact</title>
                     <style>
                     @media only screen and (max-width: 620px) {
                       table[class=body] h1 {
@@ -236,7 +235,7 @@ export default {
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.email}</p>
 
                                         <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Message: </p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.message}</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.text}</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -324,6 +323,13 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
 
+  }
+
+  .custom--btn {
+    background: #2B3D4C;
+    color: #fff;
+    margin: 1rem auto 0 auto;
+    width: 90%;
   }
 
   .block-strong {

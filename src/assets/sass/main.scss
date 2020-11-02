@@ -237,3 +237,90 @@ input {
 		width: 46px;
 	}
 }
+
+
+
+
+.navbar-bg {
+	background-color: #2B3D4C;
+	color: #fff;
+  }
+  
+  .ios-translucent-bars .navbar-bg{
+	background-color: #2B3D4C;
+	color: #fff;
+  }
+  
+  .navbar-inner {
+	  color: #fff;
+  }
+  
+  .navbar-inner .back{
+	  color: #fff;
+  }
+  
+  .tab-link i.icon {
+	  color: #2B3D4C;
+  }
+  
+  .tabbar .tab-link-active, .tabbar-labels .tab-link-active {
+	  color: #2B3D4C;
+  }
+  
+  .list ul::before {
+	  height: 0px;
+  }
+  
+  .list ul::after {
+	  height: 0px;
+  }
+
+
+
+
+.list ul::before {
+	height: 0px;
+}
+
+.list ul::after {
+	height: 0px;
+}
+
+.listing .media-item .item-link .item-subtitle {
+	background: rgba(7, 153, 144, 0.5);
+	border-radius: 6px;
+	color: #2B3D4C;
+	display: inline;
+	margin: 0;
+	padding: 0.2rem 0.6rem;
+}
+
+.listing .media-item .item-link .item-text {
+	background: #E5D117;
+	border-radius: 6px;
+	color: #2B3D4C;
+	margin: 0;
+	margin-top: 0.2rem;
+	padding: 0.1rem 0.6rem;
+	width: 60%;
+}
+
+
+
+
+.portfolio-list .media-item .item-link .item-subtitle {
+	border-radius: 6px;
+	color: #2B3D4C;
+	display: inline;
+	margin: 0;
+}
+
+.portfolio-list .media-item .item-link .item-text {
+	background: #E5D117;
+	border-radius: 6px;
+	color: #2B3D4C;
+	margin: 0;
+	margin-top: 0.2rem;
+	padding: 0.1rem 0.6rem;
+	width: 85%;
+}

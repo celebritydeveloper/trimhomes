@@ -1,7 +1,7 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Outright Payment" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -47,7 +47,7 @@
                 of property acquisition services. Please refer to our <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link> for more details of
                 how we use your contact information.  
           </p>
-          <f7-button class="signup--btn" type="submit">Submit</f7-button>
+          <f7-button fill large raised class="custom--btn" type="submit">Submit</f7-button>
         </li>
         
       </ul>
@@ -57,9 +57,10 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
-import user from '../../images/user.png';
+//import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
@@ -97,11 +98,11 @@ export default {
       this.uid = user.uid;
       this.getAccount();
     }else {
-      this.$f7router.navigate('/login/');
+      this.$f7router.navigate('/');
     }
     }else {
         console.log("User logged out");
-        this.$f7router.navigate('/login/');
+        this.$f7router.navigate('/');
     }
     });
 
@@ -109,11 +110,10 @@ export default {
       this.userProps = JSON.parse(localStorage.getItem('outrightProperty'));
       this.propertyName = this.userProps.propertyName;
       this.location = this.userProps.location;
-      this.outright = this.userProps.outright;
+      this.outright = parseInt(this.userProps.outright);
       this.partPrice = this.userProps.partPrice;
       this.propId = this.userProps.ref;
       this.image = this.userProps.image;
-
     
   },
   methods: {
@@ -146,7 +146,7 @@ export default {
     },
 
     getPercent() {
-      return Number(this.amount * 100 / this.outright).toFixed(2);
+      return Number(this.outright * 0.01);
     },
 
     async requestOutright() {
@@ -162,8 +162,8 @@ export default {
               image: this.image,
               propertName: this.propertyName,
               Location: this.location,
-              monthlyIncome: "",
-              totalIncome: "",
+              monthlyIncome: this.getPercent(),
+              totalIncome: 0,
               Paid: false,
               Date: new Date()
             }).then(() => {
@@ -177,19 +177,22 @@ export default {
               image: this.image,
               propertName: this.propertyName,
               Location: this.location,
-              totalIncome: "",
-              monthlyIncome: "",
+              totalIncome: 0,
+              monthlyIncome: this.getPercent(),
+              Status: "Under Review",
+              Requested: false,
               Paid: false,
-              Date: new Date()
+              Date: new Date(),
+              paymentDate: new Date()
             });
             }).then(() => {
             Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              secureToken: "df141b53-cbb5-423c-92ac-ecc8b9a2b245",
               Host : "smtp.elasticemail.com",
-              Username : "timi@trimhomes.co.uk",
-              Password : "E1BD953204C2FDCAE490CAC5FE81BC1A7AC5",
-              To : "essiensaviour.a@gmail.com",
-              From : "timi@trimhomes.co.uk",
+              Username : "mail@trimhomes.co.uk",
+              Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
+              To : "mail@trimhomes.co.uk",
+              From : "mail@trimhomes.co.uk",
               Subject : "Outright Payment Request - TrimHomes",
               Body : `
               <!doctype html>
@@ -363,6 +366,7 @@ export default {
           }).then(() => {
           this.$f7.preloader.hide();
           this.$f7.dialog.alert('Your request has been sent. Admin will reach out ASAP', "Success");
+          this.$f7router.back();
         });
             
           
@@ -403,6 +407,13 @@ export default {
     .text-black {
         color: #000;
     }
+
+    .custom--btn {
+    background: #2B3D4C;
+    color: #fff;
+    margin: 1rem auto 0 auto;
+    width: 90%;
+  }
 
   .register {
     background: #fff;

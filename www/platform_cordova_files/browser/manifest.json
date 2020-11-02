@@ -2,10 +2,10 @@
   "background_color": "#FFF",
   "display": "standalone",
   "name": "Trim Homes",
-  "short_name": "Trim Homes",
+  "short_name": "TrimHomes",
   "version": "com.trimhomes.trimhomes",
-  "description": "Trim Homes real estate app",
-  "author": "Apache Cordova Team",
+  "description": "TrimHomes real estate investment app",
+  "author": "Saviour Essien",
   "icons": [],
   "start_url": "index.html"
 }

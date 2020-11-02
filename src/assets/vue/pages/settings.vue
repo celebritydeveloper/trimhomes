@@ -1,7 +1,6 @@
 <template>
-  <f7-page>
-  <f7-navbar class="home--nav">
-    <f7-navbar back-link="Settings" no-shadow no-hairline back-link-show-text></f7-navbar>
+  <f7-page name="profile">
+  <f7-navbar class="home--nav" back-link="Settings" back-link-show-text>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -9,7 +8,7 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="confirm">
       <div class="user-image">
-        <img :src="image" alt="" class="user-image">
+        <img :src="avatar" alt="" class="user-image">
       </div>
       <div class="list no-chevron setting-menu">
         <ul>
@@ -103,6 +102,8 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
+import avatar from '../../images/user.png';
+
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
@@ -115,6 +116,7 @@ export default {
     data() {
     return {
       logo,
+      avatar,
       image: null,
       name: null,
       email: null,
@@ -125,24 +127,11 @@ export default {
     }
   },
   methods: {
-     loadMore(done) {
-       setTimeout(() => {
-       this.$f7router.navigate('/home1/');
-       done();
-       }, 1000);
-    },
 
     convertCurrency(value) {
         return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
     },
 
-    logout() {
-      firebase.auth().signOut().then(function() {
-        this.$f7router.navigate('/login/');
-      }).catch(function(error) {
-        this.$f7.dialog.alert(error.message, "Error");
-      });
-    },
 
     settings() {
         this.$f7router.navigate('/settings/');

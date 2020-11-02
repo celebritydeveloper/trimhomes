@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="login">
+  <f7-page class="login" no-toolbar no-navbar no-swipeback>
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <div class="block block-strong">
       <img :src="logo" class="logo">
@@ -57,8 +57,6 @@ import 'firebase/firestore';
 import 'firebase/auth';
 
 let userInfo;
-
-
 export default {
   data() {
     return {
@@ -69,53 +67,98 @@ export default {
       number: null
     }
   },
-  mounted() {
-  console.log('App mounted!');
-    if (localStorage.getItem('trimhomeUser'));
-    userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
-    this.number = userInfo.memorableNumber;
-    console.log(userInfo);
+  mounted(){
+    firebase.auth().onAuthStateChanged(users => {
+    if(users) {
+        const user = firebase.auth().currentUser;
+        let name, email, photoUrl, uid, emailVerified;
+
+      if (user != null) {
+        this.$f7router.navigate('/home/', {
+          reloadCurrent: true,
+          ignoreCache: true,
+        });
+      }else {
+        this.loginScreenOpened = true;
+      }
+      }else {
+          this.loginScreenOpened = true;
+      }
+
+      this.getProfile();
+      this.getInvestment();
+    });
   },
   methods: {
     async loginUser() {
-      this.$f7.preloader.show();
-      if(this.number.trim() !== "" && this.number === this.mom) {
-      if(this.email.trim() !== "" && this.password.trim() !== "") {
-        try {
-          firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
-            
-        }).then(()=> {
+        this.$f7.preloader.show();
+        if(this.email != "" && this.password != "") {
+          try {
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+          }).then(()=> {
+            firebase.auth().onAuthStateChanged(users => {
+                if(users) {
+                    const user = firebase.auth().currentUser;
+                    let displayName, email, photoUrl, uid, emailVerified;
+
+                if (user != null) {
+                  this.id = user.uid;
+                  firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
+                  snapshot.docs.map(doc => {
+                    this.data = doc;
+                  });
+                }).then(() => {
+              if(this.mom !== "" && this.data.data().memorableNumber === this.mom){
+                this.$f7.preloader.hide();
+                this.loginScreenOpened = false;
+                this.$f7router.navigate('/home/', {
+                  reloadCurrent: true,
+                  ignoreCache: true,
+                });
+              }else {
+                this.$f7.preloader.hide();
+                this.$f7.dialog.alert("Memorable Number Does Not Match", "Error");
+                console.log("Memorable Number Does Not Match");
+              }
+            });
+                }else {
+                  this.$f7.preloader.hide();
+                  this.loginScreenOpened = true;
+                }
+                }else {
+                    this.$f7.preloader.hide();
+                    this.loginScreenOpened = true;
+                }
+            })
+              
+          }).catch (error => {
             this.$f7.preloader.hide();
-            this.$f7router.navigate('/');
-        }).catch (error => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            this.$f7.dialog.alert(error, "Error");
+            console.log(error);
+            console.log(errorMessage, errorCode);
+          }); 
+        
+            
+        } catch (error) {
+          this.$f7.preloader.hide();
           const errorCode = error.code;
           const errorMessage = error.message;
-          this.$f7.preloader.hide();
+          this.$f7.dialog.alert(error, "Error");
           console.log(error);
-          this.$f7.dialog.alert(errorMessage, errorCode);
-        }); 
-      
-          
-      } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        this.$f7.preloader.hide();
-        console.log(error);
-        this.$f7.dialog.alert(errorMessage, "Error");
-      }
-      
-      return true;
-      }else {
-        this.$f7.preloader.hide();
-        this.$f7.dialog.alert("Input fields must not be empty", "Error");
+          console.log(errorMessage);
+        }
         
-      }
-      }else {
-        this.$f7.preloader.hide();
-        this.$f7.dialog.alert("Memorable Number doesn't match", "Error");
-      }
-      
-    }
+        return true;
+        }else {
+           this.$f7.preloader.hide();
+          this.$f7.dialog.alert("Input fields must not be empty", "Error");
+          console.log("Input fields must not be empty");
+          
+        }
+
+      },
   },
   components: {},
 };

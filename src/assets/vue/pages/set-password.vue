@@ -17,7 +17,7 @@
         <li class="item-content item-input disabled">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="token" v-model="token" type="text">              
+              <input name="token" v-model="token" :placeholder="token" type="text">              
             </div>
           </div>
         </li>
@@ -115,9 +115,9 @@ export default {
           return firebase.firestore().collection("users").doc(users.user.uid).set({
               fullName: userInfo.firstName + ' ' + userInfo.lastName,
               phone: userInfo.phone,
-              address: userInfo.address,
+              address: '',
               city: '',
-              country: '',
+              country: userInfo.country,
               email: userInfo.email,
               memorableNumber: userInfo.memorableNumber,
               bankName: '',
@@ -126,6 +126,8 @@ export default {
               bankSortCode: '',
               postalCode: '',
               image: userInfo.image,
+              referrer: userInfo.referrer,
+              staff: userInfo.staff,
               token: userInfo.token,
               verified: true,
               created: userInfo.created,
@@ -137,12 +139,12 @@ export default {
             photoURL: userInfo.image
           }).then(()=> {
             Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              secureToken: "df141b53-cbb5-423c-92ac-ecc8b9a2b245",
               Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              Username : "mail@trimhomes.co.uk",
+              Password : "70C480D70078C27D7CC5C00B9A747FB3D19D",
               To : userInfo.email,
-              From : "essiensaviour.a@gmail.com",
+              From : "mail@trimhomes.co.uk",
               Subject : "Welcome to TrimHomes UK",
               Body : `
               <!doctype html>
@@ -258,9 +260,51 @@ export default {
                                     <tr>
                                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
                                       <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Welcome to TrimHomes UK Family</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you ${this.firstName} for creating an account with us, you can now enjoy all the benefits we offer.</p>
-                                       
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Dear ${this.name},</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>Thank you for signing up with Trim Homes.  Here are our key offerings.</strong></p>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>1. Property Consultancy: </strong></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">We are a one-stop shop property company who assist our clients in bringing their property visions to life. We are involved from the property viewing stage to the property rental stage.</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">We work within the budgets of our clients in selecting the best properties to generate profitable rental income .</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px; text-decoration: underline;">How do we do this? </p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Our knowledge of the market is unrivalled, and we utilise this knowledge to assist with your property vision.</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Are you looking to buy? Should you buy from an auction? Do you have enough money saved for a mortgage deposit? where is the best place to get a property? You have X amount, how do you get a home with this? how do you get into the property market? how do you get a conveyancer? Do you need a mortgage broker? How can you access finance to enter the property market?</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">These and so many other questions are what we can assist with in addition to assisting with the leg work required.</p>                                        
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">We will engage thoroughly with you to understand your needs and to create strategies that help you achieve those needs at the best possible prices with the best possible yields.</p>  
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">If you think you may be ready or not ready to enter the UK property company, contact us and we will be happy to assist with your journey.</p>
+
+                                        p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>2. Rent Earners Scheme </strong></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Trim Homes Limited owns an extensive list of properties which are all rented. Members of the Trim Homes Rent Earners Scheme are able to buy a part of any available property according to their own budget, and in return, they receive a part of the rental income that is paid to Trim Homes for that property. This income is proportionate to their contribution to the property and varies between 1% of the purchase amount.</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">For instance, if you contribute £500 towards one property, you earn about £5.00 every month in rental income. When you want to withdraw your contribution, we withdraw immediately for you (no pre-condition) and you get your £500 back in 4 weeks. It’s that straightforward and you can start putting your money to work right away.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">a) <strong>How to join the Rent Earners Scheme</strong></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">1. <a href="trimhomesapp.web.app/#/properties/ target="_blank">Select a property</a> from our portfolio. You will see how much is available for contribution with each property. If you do not have a Trim Homes account, you will be prompted to create one.</p>
+
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">2. <strong> Make a payment</strong></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>3.</strong> Earn monthly rental income on your payment.</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>4.</strong> Withdraw your payment whenever you are ready.</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>5.</strong> You can withdraw your funds at any time from your Trim Homes Limited online account.</p>
+                                        
+                                        
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>The terms of the Rent Earners Scheme are as follows: </strong></p>
+                                                                               
+
+                                        <ul style="font-family: sans-serif; font-size: 12px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                                          <li>Trim Homes Limited is the registered proprietor of the property which is registered at the land registry.</li>
+                                          <li>The Property is let on a residential tenancy.</li>
+                                          <li>You shall receive a calendar monthly payment equivalent to 1% of your rent earners contribution amount.</li>
+                                          <li>You can request for your payment at any time and your account will be credited within 4 weeks from the date of your request..</li>
+                                          <li>Trim will continue to pay your rent up until the point of your request to withdraw your paid amount.</li>
+                                          <li>The Parties hereto agree and covenant with the other that they shall individually be responsible for the payment of any tax or duty for which they may be personally liable and indemnify each the other from all such liability.</li>
+                                        </ul>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Please note that Trim Homes is registered with Companies House in the UK- Registration number 12442185</p>
+                                        <p style="font-family: sans-serif; font-size: 12px; color:#6c757d; font-weight: normal; margin: 0; Margin-bottom: 18px;">Companies House is the United Kingdom's registrar of companies and is an executive agency and trading fund of Her Majesty's Government. It falls under the remit of the Department for Business, Energy and Industrial Strategy and is also a member of the Public Data Group</p>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Regards, <br> <strong>The Trim Homes Team</strong> </p>
+
+
                                       </td>
                                     </tr>
                                   </table>
@@ -296,7 +340,10 @@ export default {
           );
           }).then(()=> {
             this.$f7.preloader.hide();
-            this.$f7router.navigate('/');
+            this.$f7router.navigate('/home/', {
+                reloadCurrent: true,
+                ignoreCache: true,
+            });
           })
         })
           

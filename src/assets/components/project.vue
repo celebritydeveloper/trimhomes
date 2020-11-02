@@ -20,6 +20,7 @@
 import home from '../images/home.jpg';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import { log } from 'util';
 
 
 let data;
@@ -33,18 +34,32 @@ export default {
   },
 
     mounted() {
-        firebase.firestore().collection("properties").get().then((snapshot) => {
-            snapshot.docs.map(doc => {
-              data = doc;
-              this.properties.push(data); 
-            });
-        });
+      this.getProperties();
     },
 
-    methods: {
-      convertCurrency(value) {
-            return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
-        },
+methods: {
+  convertCurrency(value) {
+    return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
+  },
+
+  getProperties() {
+    firebase.firestore().collection("properties").get().then((snapshot) => {
+      snapshot.docs.map(doc => {
+        this.properties.push(doc);
+        console.log(doc);
+      });
+    });
+  }
+},
+
+    computed: {
+      // getProperties: function () {
+      //   firebase.firestore().collection("properties").get().then((snapshot) => {
+      //       snapshot.docs.map(doc => {
+      //         this.properties.push(doc); 
+      //       });
+      //   });
+      // }
     }
 
 }

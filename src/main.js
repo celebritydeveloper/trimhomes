@@ -56,6 +56,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 //const storage = firebase.storage();
 
+
+import VueTelInput from 'vue-tel-input';
+Vue.use(VueTelInput);
+
+import vueCountryRegionSelect from 'vue-country-region-select'
+Vue.use(vueCountryRegionSelect)
+
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue);
 

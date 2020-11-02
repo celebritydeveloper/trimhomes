@@ -9,95 +9,58 @@
 
 
     <f7-page-content class="confirm">
-
+        <f7-row class="mt-1">
+          <f7-col>
+            <p class="m-0">{{currentProperty.propertName}}</p>
+            <p class="m-0">{{currentProperty.Location}}</p>
+          </f7-col>
+          <f7-col>
+            <p class="m-0 text-center">{{percentage}}%</p>
+            <p class="m-0 text-center">ROI</p>
+          </f7-col>
+          <f7-col>
+            <p class="h2 m-0 text-right" v-if="days < 2">{{this.days}} Day In </p>
+            <p class="h2 m-0 text-right" v-else>{{this.days}} Days In </p>
+            <p class="m-0 text-right">JOINED {{day + " " + month + " " + year}}</p>
+          </f7-col>
+        </f7-row>
         <f7-swiper pagination>
             <f7-swiper-slide class="slide-img"><img :src="currentProperty.image"></f7-swiper-slide>
         </f7-swiper>
 
-        <div class="project-top">
-            <p class="project-type">
-                {{currentProperty.propertName}}
-                <!--<span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
-                  {{currentProperty.Location}},
-                  </span>-->
-                  <span class="project-location">
-                  {{currentProperty.Location}},
-                  </span>
-            </p>
-        </div>
-
-        <f7-block class="project-icons">
-        <f7-row>
-            <f7-col v-for="(icon, index) in currentProperty.Amenities" :key="index">
-                <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">{{icon}}</p>
-                </f7-card>
-            </f7-col>
-        </f7-row>
-        </f7-block>
 
          <f7-block class="project-info-block">
-             <div class="project-info">
-                <p class="project-info-title">Investment Amount</p>
-                <p class="project-info-text">This is the amount you invested in this property.</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Amount)}}</span>
-                </div>
-              </div>
+           <div class="project-info">
+             <p class="project-info-title price"><span><f7-icon class="info-icon" ios="f7:checkmark_alt_circle" aurora="f7:checkmark_alt_circle" md="material:check_circle_outline"></f7-icon> Total Payment: </span> <span>{{convertCurrency(currentProperty.Amount)}}</span></p>
+             <p class="m-0">This is the amount you contributed towards the rent earners scheme on this property.</p>
+           </div>
 
-              <div class="project-info">
-                <p class="project-info-title">Total Income</p>
-                <p class="project-info-text">This is the total income you have accumulated overtime.</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.monthlyIncome)}}</span>
-                </div>
-              </div>
+           <div class="project-info">
+             <p class="project-info-title price"><span><f7-icon class="info-icon" ios="f7:checkmark_alt_circle" aurora="f7:checkmark_alt_circle" md="material:check_circle_outline"></f7-icon> Estimated Monthly Income:</span> <span>{{convertCurrency(currentProperty.monthlyIncome)}}</span></p>
+             <p class="m-0">This is the amount of rent that you will receive each month, which is a % of your total payment.</p>
+           </div>
 
+           <div class="project-info">
+             <p class="project-info-title price" v-if="currentProperty.totalIncome == ''"><span><f7-icon class="info-icon" ios="f7:checkmark_alt_circle" aurora="f7:checkmark_alt_circle" md="material:check_circle_outline"></f7-icon>Rental Income To Date: </span> <span>{{convertCurrency(currentProperty.totalIncome)}}</span></p>
+             <p class="project-info-title price" v-else><span><f7-icon class="info-icon" ios="f7:checkmark_alt_circle" aurora="f7:checkmark_alt_circle" md="material:check_circle_outline"></f7-icon>Rental Income To Date: </span> <span>{{convertCurrency(currentProperty.totalIncome)}}</span></p>
+             <p class="m-0">This is the total amount that you have received in rent each month.</p>
+           </div>
+
+           <div class="project-info">
+             <p class="project-info-title price"><span><f7-icon class="info-icon" ios="f7:checkmark_alt_circle" aurora="f7:checkmark_alt_circle" md="material:check_circle_outline"></f7-icon>Percentage Gain: </span> <span>{{percentage}}%</span></p>
+             <p class="m-0">This is the percentage of your initial payment that you have received back as profit.</p>
+           </div>
+
+            <div>
+              <p class="withdraw text-center" v-if="withdrawal.withdraw == true">You have already requested payment</p>
+            </div>
             <div class="action-btn">
-              <button class="register--white" @click="sellProperty">
-                <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
-                Sell Property
-                </button>
-              <button class="register--btn" @click="widthdraw">
-                <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
-                  Withdraw
-                </button>
+              <f7-button class="part--btn fund-tooltip" large disabled @click="showTooltip"> Add Funds </f7-button>
+              <f7-button class="outright--btn" large @click="withdrawFunds" :disabled="withdrawal.withdraw == true" v-if="currentProperty.Status == 'Paid'"> Withdraw </f7-button>
+              <f7-button class="outright--btn" large @click="withdrawFunds"  v-else-if="currentProperty.Status == 'Pending'"> Pay Now </f7-button>
+              <f7-button class="outright--btn" large  disabled v-if="currentProperty.Status == 'Under Review'"> Under Review </f7-button>
             </div>
         </f7-block>
-
-        <!-- Swipe to close demo sheet -->
-        <f7-sheet ref="actionsOneGroup"
-            class="demo-sheet-swipe-to-close"
-            style="height:auto; --f7-sheet-bg-color: #fff;"
-            swipe-to-close
-            backdrop
-            >
-            <f7-page-content>
-                <f7-block>
-                  <p class="request-title">How much do you want to buy?</p>
-                <form @submit.prevent="makeRequest" no-store-data="true" class="list form-store-data" id="demo-form">
-                  <ul>
-                    <li class="item-content item-input">
-                      <div class="item-inner">
-                        <div class="item-input-wrap">
-                          <input name="amount" type="number" v-model="amount" placeholder="Enter Amount">
-                          <span class="input-clear-button"></span>
-                        </div>
-                      </div>
-                    </li>
-                    
-                  </ul>
-                  <p class="request-income">Your Monthly Rental Income:
-                    <span>{{convertCurrency(50)}}</span>
-                  </p>
-                  <p class="request-info">Based on your purchase amount entered above, your monthly rental income of <strong>{{convertCurrency(50)}}</strong> will be paid on the last day of next month.</p>
-
-                  <f7-button class="verify--btn" type="submit">Proceed to Payment</f7-button>
-                </form>
-                </f7-block>
-            </f7-page-content>
-        </f7-sheet>
         
     </f7-page-content>
 
@@ -131,9 +94,16 @@ export default {
       isBottom: true,
       properties: [],
       currentProperty: {},
+      withdrawal: {},
+      withdrawData: null,
       userName,
       name: null,
-      email:  null
+      email:  null,
+      day: null,
+      month: null,
+      year: null,
+      days: null,
+      percentage: null,
     }
   },
   mounted() {
@@ -143,6 +113,7 @@ export default {
     userEmail = userInfo.email;
 
     this.fetchByParam();
+    this.fetchWithdrawal();
 
     firebase.auth().onAuthStateChanged(user => {
     if(user) {
@@ -168,10 +139,28 @@ export default {
       f7Sheet,
   },
   methods: {
+    withdrawFunds() {
+      this.$f7router.navigate(`/withdrawal/${this.getParam}`);
+    }, 
+    showTooltip() {
+       this.$f7.tooltip.create({
+        targetEl: '.fund-tooltip',
+        text: 'Tooltip text',
+      });
+    },
     openDialog() {
         this.$f7.dialog.confirm('Are you feel good today?', function () {
         this.$f7.dialog.alert('Great!');
       });
+    },
+    fetchWithdrawal() {
+      firebase.firestore().collection("withdrawal").where(firebase.firestore.FieldPath.documentId(), "==", this.getParam).get().then((snapshot) => {
+            snapshot.docs.map(doc => {
+              this.withdrawData = doc.data();
+            });
+            this.withdrawal = this.withdrawData;
+            
+        })
     },
     fetchByParam() {
       firebase.firestore().collection("portfolio").where(firebase.firestore.FieldPath.documentId(), "==", this.getParam).get().then((snapshot) => {
@@ -181,6 +170,14 @@ export default {
             });
 
             this.currentProperty = this.property;
+            this.percentage = Math.round((this.currentProperty.totalIncome / this.currentProperty.Amount) * 100); 
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                ];
+            this.day = this.currentProperty.Date.toDate().getDate();
+            this.month = monthNames[this.currentProperty.Date.toDate().getMonth()];
+            this.year = this.currentProperty.Date.toDate().getFullYear();
+            this.days = Math.round((new Date() - this.currentProperty.Date.toDate()) / (1000*60*60*24))
         })
     },
     convertCurrency(value) {
@@ -583,8 +580,41 @@ export default {
         background: #fff;
     }
 
+    .m-0 {
+      margin: 0;
+    }
+
+    .mt-1 {
+      margin-bottom: 0.8rem;
+      margin-top: 0.6rem;
+      padding: 0 0.4rem;
+    }
+
     .confirm {
       padding-top: 0;
+    }
+
+    .outright--btn {
+    background: #0d919b;
+    color: #fff;
+    margin-top: 0.7rem;
+    width: 50%;
+  }
+
+  .part--btn {
+    background: #2B3D4C;
+    color: #fff;
+    margin-top: 0.7rem;
+    margin-right: 0.4rem;
+    width: 49%;
+  }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-right {
+      text-align: right;
     }
 
     .slide-img {
@@ -595,6 +625,13 @@ export default {
     .slide-img img{
         object-fit: cover;
         width: 100%;
+    }
+
+    .price {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
     }
 
     .project-top {
@@ -642,7 +679,8 @@ export default {
     .action-btn {
       align-items: center;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
+      margin-bottom: 1rem;
     }
 
     .project-icons {
@@ -671,6 +709,13 @@ export default {
         font-size: 0.7rem;
         margin: 0;
         padding: 0;
+    }
+
+    .withdraw {
+      color: rgb(235, 84, 84);
+      margin: 0;
+      margin-top: 1.5rem;
+      padding: 0;
     }
 
     .inline {
@@ -736,8 +781,7 @@ export default {
     }
 
     .info-icon {
-      color: #899CB2;
-      font-size: 2rem;
+      color:  #E5D117;
     }
 
     .info-btn {

@@ -1,22 +1,42 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-
+import Vue from "vue";
+import Vuex from "vuex";
 Vue.use(Vuex);
+
+
 
 export default new Vuex.Store({
   state: {
-    user: {}
-  },
-
-  actions: {
-    userLogged ({commit}, user) {
-      commit('USER_LOGGED', user);
+    user: {
+      loggedIn: false,
+      data: null
     }
   },
-
+  getters: {
+    user(state){
+      return state.user
+    }
+  },
   mutations: {
-    USER_LOGGED (state, user) {
-      state.user = user;
+    SET_LOGGED_IN(state, value) {
+      state.user.loggedIn = value;
+    },
+    SET_USER(state, data) {
+      state.user.data = data;
     }
   },
+  actions: {
+    fetchUser({ commit }, user) {
+      commit("SET_LOGGED_IN", user !== null);
+      if (user) {
+        commit("SET_USER", {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          image: user.photoURL
+        });
+      } else {
+        commit("SET_USER", null);
+      }
+    }
+  }
 });

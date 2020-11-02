@@ -55,6 +55,7 @@
       </f7-tab>
       <f7-tab id="tab-2" class="page-conten" name="Properties">
           <Project />
+          
       </f7-tab>
       <f7-tab id="tab-3" class="page-conten" name="Portfolio">
         <div class="card card-outline user-card">
@@ -69,7 +70,7 @@
               <p class="invest-title">Investment</p>
             </div>
             <div class="invest-item">
-              <p class="invest-amount">{{convertCurrency(parseInt(totalIncome))}}</p>
+              <p class="invest-amount">{{convertCurrency(parseFloat(totalIncome))}}</p>
               <p class="invest-title">Monthly Income</p>
             </div>
           </div>
@@ -122,7 +123,6 @@ export default {
       id: null,
       city: null,
       country: null,
-      portfolioId: null,
       portfolioId: null,
       singlePortfolio: null,
       amount: null,
@@ -200,8 +200,7 @@ export default {
             let results = snapshot.docs.map(doc => {
               this.userId = doc.id;
               this.user = doc.data();
-            })
-
+            });
             this.phone = this.user.phone;
             this.address = this.user.address
             this.memorableNumber = this.user.memorableNumber;
@@ -220,7 +219,7 @@ export default {
 
     async getInvestment() {
         try {
-          firebase.firestore().collection("portfolio").where("userId", "==", this.id).where("Paid", "==", true).get().then((snapshot) => {
+          firebase.firestore().collection("portfolio").where("userId", "==", this.id).where("Requested", "==", false).get().then((snapshot) => {
             snapshot.docs.forEach(doc => {
               this.propsId = doc.data().propId;
               this.paid = doc.data().Amount;

@@ -9,7 +9,7 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="forgot">
     <div class="block block-strong">
-        <img :src="image" class="user">
+        <img :src="avatar" class="user">
       <p class="text">Enter the email address associated with your account</p>
       <p class="text-small">We will send you a verification  code to reset your password</p>
     </div>
@@ -23,7 +23,7 @@
           </div>
         </li>
         <li>
-          <f7-button class="verify--btn" type="submit">Reset Password</f7-button>
+          <f7-button fill large raised class="custom--btn" type="submit">Reset Password</f7-button>
         </li>
         
       </ul>
@@ -33,14 +33,11 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
-import OTP from 'otp-client';
+import avatar from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 
-
-const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY';
-const otp = new OTP(secret);
-const otpCode = otp.getToken();
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 let userId;
@@ -50,6 +47,7 @@ export default {
   data() {
     return {
       logo,
+      avatar,
       image: null,
       email: "",
     }
@@ -100,7 +98,7 @@ export default {
         this.$f7.preloader.hide();
         console.log(err);
       }
-      return true;
+        return true;
       }else {
         this.$f7.preloader.hide();
         this.$f7.dialog.alert("Email must not be empty and should be valid", "Error");
@@ -127,6 +125,13 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
 
+  }
+
+  .custom--btn {
+    background: #2B3D4C;
+    color: #fff;
+    margin: 1rem auto 0 auto;
+    width: 90%;
   }
 
   .block-strong {

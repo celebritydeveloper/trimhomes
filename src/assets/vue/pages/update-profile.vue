@@ -1,7 +1,6 @@
 <template>
-  <f7-page>
-  <f7-navbar class="home--nav">
-    <f7-navbar back-link="Update Profile" back-link-show-text></f7-navbar>
+  <f7-page name="Update Profile">
+  <f7-navbar class="home--nav" back-link="Update Profile" back-link-show-text>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -9,7 +8,7 @@
     
     <f7-page-content class="register">
       <div class="user-image">
-        <img :src="image" alt="" class="user-image">
+        <img :src="avatar" alt="" class="user-image">
       </div>
     <form @submit.prevent="updateProfile" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
@@ -84,7 +83,7 @@
           </div>
         </li>
         <li>
-          <f7-button class="register--btn" type="submit">Update Profile</f7-button>
+          <f7-button fill large raised class="custom--btn" type="submit">Update Profile</f7-button>
         </li>
         
       </ul>
@@ -94,9 +93,11 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
+import avatar from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage'
+import 'firebase/auth';
 
 
 let pics;
@@ -105,15 +106,16 @@ export default {
     return {
       errors: [],
       logo,
+      avatar,
       imageData: null,
       picture: null,
       uploadValue: 0,
-      phone: "",
-      address: "",
-      memorableNumber: "",
-      city: "",
-      country: "",
-      zip: "",
+      phone: null,
+      address: null,
+      memorableNumber: null,
+      city: null,
+      country: null,
+      zip: null,
       id: null,
       userId: null,
       user: null,
@@ -394,9 +396,8 @@ export default {
     text-transform: capitalize;
   }
 
-  .register--btn {
+  .custom--btn {
     background: #2B3D4C;
-    border-radius: 0px;
     color: #fff;
     margin: 1rem auto 0 auto;
     width: 90%;
