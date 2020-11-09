@@ -135,71 +135,52 @@ import 'firebase/auth';
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
-//let userId;
-let userInfo;
-let userEmail;
-let userName;
-let data;
-
 export default {
     data() {
         return {
-        logo,
-        portfolioId: null,
-        amount: '',
-        isBottom: true,
-        properties: [],
-        currentProperty: {},
-        userName,
-        bankName: "",
-        accountName: "",
-        accountNumber: "",
-        sortCode: "",
-        country: "",
-        user: null,
-        name: null,
-        email:  null,
-        day: null,
-        month: null,
-        year: null,
-        days: null,
-        percentage: null,
-        bankSuccess: null,
-        disableWithdraw: true,
+          logo,
+          portfolioId: null,
+          amount: '',
+          isBottom: true,
+          properties: [],
+          currentProperty: {},
+          bankName: "",
+          accountName: "",
+          accountNumber: "",
+          sortCode: "",
+          country: "",
+          user: null,
+          name: null,
+          email:  null,
+          id: null,
+          bankSuccess: null,
+          disableWithdraw: true,
         }
   },
   mounted() {
-    if (localStorage.getItem('trimhomeUser'));
-    userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
-    console.log(userInfo);
-    userEmail = userInfo.email;
-
     firebase.auth().onAuthStateChanged(user => {
     if(user) {
-        const user = firebase.auth().currentUser;
+      const user = firebase.auth().currentUser;
       let name, email, photoUrl, uid, emailVerified;
 
      if (user != null) {
       this.name = user.displayName;
-      this.email = user.email;
+      //this.email = user.email;
       this.id = user.uid;
       this.getAccount();
       this.fetchByParam();
-      // photoUrl = user.photoURL;
-      // emailVerified = user.emailVerified;
-      // uid = user.uid;
     }else {
       this.$f7router.navigate('/', {
-                  reloadCurrent: true,
-                  ignoreCache: true,
-              });
+        reloadCurrent: true,
+        ignoreCache: true,
+      });
     }
     }else {
-        console.log("User logged out");
-        this.$f7router.navigate('/', {
-                  reloadCurrent: true,
-                  ignoreCache: true,
-              });
+      console.log("User logged out");
+      this.$f7router.navigate('/', {
+        reloadCurrent: true,
+        ignoreCache: true,
+      });
     }
     });
   },
@@ -223,7 +204,6 @@ export default {
       if(toggle.checked) {
         this.$f7.preloader.show();
           try {
-        
             return firebase.firestore().collection("users").doc(this.id).update({
               bankName: this.bankName,
               bankAccountName: this.accountName,
@@ -238,7 +218,6 @@ export default {
             this.bankSuccess = "";
           }, 2000);
         })
-          
           } catch (err) {
             this.$f7.preloader.hide();
             //this.$f7.dialog.alert(err, "Error");
@@ -247,44 +226,35 @@ export default {
       
     },
     async getAccount() {
-        try {
-          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
-            let results = snapshot.docs.map(doc => {
-              this.user = doc.data();
-            });
-            this.bankName = this.user.bankName;
-            this.accountName = this.user.bankAccountName;
-            this.accountNumber = this.user.bankNumber;
-            this.sortCode = this.user.bankSortCode;
-            this.country = this.user.country
-            
-          });
-          
+      try {
+        firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
+        let results = snapshot.docs.map(doc => {
+          this.user = doc.data();
+        });
+          this.bankName = this.user.bankName;
+          this.accountName = this.user.bankAccountName;
+          this.accountNumber = this.user.bankNumber;
+          this.sortCode = this.user.bankSortCode;
+          this.country = this.user.country
+        });
       } catch (err) {
         this.$f7.dialog.alert(err, "Error");
       }
       return true;
-      
     },
+
     fetchByParam() {
       firebase.firestore().collection("portfolio").where(firebase.firestore.FieldPath.documentId(), "==", this.getParam).get().then((snapshot) => {
         let results = snapshot.docs.map(doc => {
-            this.portfolioId = doc.id;
-            this.property = doc.data();
+          this.portfolioId = doc.id;
+          this.property = doc.data();
         });
-            this.currentProperty = this.property;
-            this.percentage = Math.round((this.currentProperty.totalIncome / this.currentProperty.Amount) * 100); 
-            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                ];
-            this.day = this.currentProperty.Date.toDate().getDate();
-            this.month = monthNames[this.currentProperty.Date.toDate().getMonth()];
-            this.year = this.currentProperty.Date.toDate().getFullYear();
-            this.days = Math.round((new Date() - this.currentProperty.Date.toDate()) / (1000*60*60*24))
+          this.currentProperty = this.property;
+          console.log(this.currentProperty);
         })
     },
     convertCurrency(value) {
-            return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
+      return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
     },
 
     async sellProperty() {

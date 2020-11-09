@@ -2,7 +2,7 @@
   <f7-page name="portfolios" ptr @ptr:refresh="loadMore" @ptr:pullend="clearPortfolio">
       <f7-navbar>
         <f7-nav-left>
-          <f7-nav-title>Portfolios</f7-nav-title>
+          <f7-nav-title>My Portfolio</f7-nav-title>
         </f7-nav-left>
         
         <f7-nav-right>

@@ -32,7 +32,7 @@
         <f7-row>
             <f7-col v-for="(icon, index) in currentProperty.Amenities" :key="index">
                 <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:grade"></f7-icon>
+                    <f7-icon class="info-icon" ios="f7:checkmark_seal" aurora="f7:checkmark_seal" md="material:grade"></f7-icon>
                     <p class="info-text">{{icon}}</p>
                 </f7-card>
             </f7-col>
@@ -991,7 +991,7 @@ export default {
     background: #2B3D4C;
     color: #fff;
     margin-top: 0.7rem;
-    width: 50%;
+    width: 60%;
   }
 
   .inactive-register--btn {

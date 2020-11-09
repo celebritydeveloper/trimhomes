@@ -84,9 +84,6 @@ export default {
       }else {
           this.loginScreenOpened = true;
       }
-
-      this.getProfile();
-      this.getInvestment();
     });
   },
   methods: {
@@ -108,7 +105,7 @@ export default {
                     this.data = doc;
                   });
                 }).then(() => {
-              if(this.mom !== "" && this.data.data().memorableNumber === this.mom){
+              if(this.mom !== "" && this.data.data().memorableNumber === this.mom) {
                 this.$f7.preloader.hide();
                 this.loginScreenOpened = false;
                 this.$f7router.navigate('/home/', {
@@ -118,7 +115,6 @@ export default {
               }else {
                 this.$f7.preloader.hide();
                 this.$f7.dialog.alert("Memorable Number Does Not Match", "Error");
-                console.log("Memorable Number Does Not Match");
               }
             });
                 }else {

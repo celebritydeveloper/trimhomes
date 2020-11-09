@@ -1,9 +1,6 @@
 <template>
   <f7-page name="contact">
-  <f7-navbar class="home--nav" back-link>
-    <f7-nav-left>
-        <f7-nav-title>Contact</f7-nav-title>
-      </f7-nav-left>
+  <f7-navbar class="home--nav" back-link="Contact" back-link-show-text>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -16,7 +13,7 @@
                 <p>info@trimhomes.com</p>
             </div>
             <div class="contact-block">
-                <f7-icon ios="f7:envelope" aurora="f7:envelope" md="material:phone"></f7-icon>
+                <f7-icon ios="f7:phone" aurora="f7:phone" md="material:phone"></f7-icon>
                 <p>+442304021477</p>
             </div>
             <f7-block-title class="title">Or write us</f7-block-title>
